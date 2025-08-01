@@ -11,10 +11,10 @@ const applicationSchema=new mongoose.Schema({
         required:true
     },
     status:{
-        types:String,
+        type:String,
         enum:["PENDING","ACCEPTED","REJECTED"],
-        default:'PENDING'
+        default:"PENDING"
     }
 },{timestamps:true})
 const Application=mongoose.model('Application',applicationSchema);
-mongoose.model=Application;
+module.exports=Application;

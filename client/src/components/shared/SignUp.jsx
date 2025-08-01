@@ -1,50 +1,64 @@
-import React, { use, useState } from "react";
-import BACKEND_URL from '../../constants/url.js';
+import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "../shadcn/ToastContext";
+import AttractiveLoader from "../shadcn/Loader";
+import { useSelector } from "react-redux";
 const Signup = () => {
   const [selectedRole, setSelectedRole] = useState("");
-  const [fileName , setFileName]=useState("No file chosen")
-    const[input , setInput]=useState({
-      fullName:"",
-      email:"",
-      password:"",
-      phoneNumber:"",
-      role:"",
-      file:""
-    })
-    const onChangeHandler=(e)=>{
-      setInput({...input,[e.target.name]:e.target.value})
+  const [fileName, setFileName] = useState("No file chosen");
+  const { showToast } = useToast();
+  const navigate = useNavigate();
+  const [input, setInput] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+    role: "",
+    file: "",
+  });
+  const {loading}=useSelector((state)=>state.auth)
+  const onChangeHandler = (e) => {
+    setInput({ ...input, [e.target.name]: e.target.value });
+  };
+  const fileHandler = (e) => {
+    setInput({ ...input, file: e.target.files?.[0] });
+    if (e.target.files.length > 0) {
+      setFileName(e.target.files[0].name);
     }
-    const fileHandler=(e)=>{
-      setInput(
-        {...input,file:e.target.files?.[0]}
-      )
-      if(e.target.files.length > 0)
-      {
-        setFileName(e.target.files[0].name)
+  };
+  // In your Signup.jsx component
+
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    const finalData = {
+      ...input,
+      role: selectedRole,
+    };
+
+    try {
+      // Send the finalData object directly as JSON
+      const res = await axios.post(
+        "http://localhost:3000/api/user/register",
+        finalData,
+        {
+          // The header will be 'application/json' by default, which is what you want
+          withCredentials: true,
+        }
+      );
+
+      if (res.data.success) {
+        showToast("Registration successful! Redirecting...", "success");
+        navigate("/login");
       }
+    } catch (error) {
+      console.log(error);
+      showToast(
+        error.response?.data?.message || "Registration failed.",
+        "error"
+      );
     }
-    const onSubmitHandler=async(e)=>{
-       e.preventDefault();
-      const finalData={
-        ...input,role:selectedRole
-      }
-      const formData=new FormData();
-      formData.append("fullName",finalData.fullName)
-      formData.append("email",finalData.email)
-      formData.append("password",finalData.password)
-      formData.append("phoneNumber",finalData.phoneNumber)
-      formData.append("role",finalData.role);
-      if(finalData.file)
-      {
-      formData.append("file",finalData.file);
-      }
-      try {
-        const res=await axios.post(`${BACKEND_URL}/register`)
-      } catch (error) {
-        console.log(error);
-      }
-    }
+  };
   return (
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4 font-sans">
       <div className="w-full max-w-md">
@@ -335,12 +349,16 @@ const Signup = () => {
             </div>
 
             {/* Signup Button */}
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-500 focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105"
-            >
-              Sign Up
-            </button>
+            {loading ? (
+                <AttractiveLoader />
+            ) : (
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-500 focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105"
+              >
+                Sign up
+              </button>
+            )}
           </form>
 
           {/* Login Link */}

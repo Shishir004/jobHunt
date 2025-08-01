@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import AvatarDropdown from '../shadcn/Avatar';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const Navbar = () => {
-  const user = false; // This can be toggled to see both states
+    const {user}=useSelector((state)=>state.auth);
   return (
     // Main navbar container with dark background and bottom border
     <div className="bg-gray-900 text-white shadow-lg border-b border-gray-700">
@@ -16,9 +17,15 @@ const Navbar = () => {
         </div>
         {/* Navigation Links */}
         <ul className="flex font-semibold items-center gap-8 text-gray-300">
-          <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">Home</li>
-          <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">Jobs</li>
-          <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">Browse</li>
+          <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
+            <Link to='/'>Home</Link>
+          </li>
+          <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
+            <Link to='/all/jobs'>Job</Link>
+          </li>
+          <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
+            <Link to='/browse'>Browse</Link>
+          </li>
         </ul>
 
         {user ? (
@@ -28,9 +35,11 @@ const Navbar = () => {
               <div className="p-2">
                  <h4 className="font-medium text-sm my-2 ml-2 text-white">shishirtiwari004@gmail.com</h4>
                  <ul className="text-sm text-gray-300">
-                   <li className="px-4 py-2 hover:bg-gray-700 rounded-md cursor-pointer">
+                  <Link to='/profile'>
+                    <li className="px-4 py-2 hover:bg-gray-700 rounded-md cursor-pointer">
                      Profile
                    </li>
+                  </Link>
                    <li className="px-4 py-2 hover:bg-gray-700 rounded-md cursor-pointer">
                      Settings
                    </li>

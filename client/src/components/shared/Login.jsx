@@ -1,36 +1,72 @@
+import axios from "axios";
 import React, { useState } from "react";
-
+import { useToast } from "../shadcn/ToastContext.jsx";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading, setUser } from "../../redux/authslice.js";
+import AttractiveLoader from "../shadcn/Loader.jsx";
 const Login = () => {
   const [selectedRole, setSelectedRole] = useState("");
-  const[input , setInput]=useState({
-    email:"",
-    password:"",
-    role:""
-  })
-  const onChangeHandler=(e)=>{
-    setInput({...input,[e.target.name]:e.target.value})
-  }
-  const onSubmitHandler=async(e)=>{
-     e.preventDefault();
+  const [input, setInput] = useState({
+    email: "",
+    password: "",
+    role: "",
+  });
+  const { loading } = useSelector((store) => store.auth);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { showToast } = useToast();
+  const onChangeHandler = (e) => {
+    setInput({ ...input, [e.target.name]: e.target.value });
+  };
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
     const finalData = {
-        ...input,
-        role: selectedRole 
+      ...input,
+      role: selectedRole,
     };
-    console.log(finalData);
-  }
+    const formData = new FormData();
+    formData.append("email", finalData.email);
+    formData.append("password", finalData.password);
+    formData.append("role", finalData.role);
+    try {
+      dispatch(setLoading(true));
+      const res = await axios.post(
+        "http://localhost:3000/api/user/login",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      dispatch(setUser(res.data.user))
+
+      if (res.data.success) {
+        navigate("/");
+        showToast("This is a success toast!", "success", res.data.message);
+      } else {
+        showToast("This is a error toast!", "success", res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4 font-sans">
       <div className="w-full max-w-md">
         <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 md:p-10 border border-gray-700">
           <h1 className="text-4xl font-bold text-center mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-           Enter Account Details
+            Enter Account Details
           </h1>
           <p className="text-center text-gray-400 mb-8">
             Join our community of professionals
           </p>
 
           <form className="space-y-6" onSubmit={onSubmitHandler}>
-
             {/* Email Input */}
             <div>
               <label
@@ -190,12 +226,16 @@ const Login = () => {
             </div>
 
             {/* Signup Button */}
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-500 focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105"
-            >
-            Login
-            </button>
+            {loading ? (
+                <AttractiveLoader />
+            ) : (
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-500 focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105"
+              >
+                login
+              </button>
+            )}
           </form>
 
           {/* Login Link */}

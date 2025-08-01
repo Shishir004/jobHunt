@@ -11,12 +11,16 @@ const registerUser = async (req, res) => {
     }
     const isemail = await User.findOne({ email });
     if (isemail) {
+      return res.status(400).json({
+        message: "Email already exist with this email",
+        success: false,
+      });
+    }
+    const existingUser = await User.findOne({ phoneNumber });
+    if (existingUser) {
       return res
-        .status(400)
-        .json({
-          message: "Email already exist with this email",
-          success: false,
-        });
+        .status(409)
+        .json({ message: "Phone number already registered" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     await User.create({
@@ -26,10 +30,10 @@ const registerUser = async (req, res) => {
       password: hashedPassword,
       role,
     });
-    return res.status(200).json({ message: "user created successfully" });
+    return res.status(200).json({ message: "user created successfully" , success: true});
   } catch (error) {
     console.log(error);
-    res.status(400).message(error);
+    res.status(400).json(error);
   }
 };
 const loginUser = async (req, res) => {
@@ -77,7 +81,7 @@ const loginUser = async (req, res) => {
       .json({
         message: `WELCOME BACK${user.fullName}`,
         user,
-        sucess: true,
+        success: true,
       });
   } catch (error) {
     console.log(error);
@@ -88,7 +92,11 @@ const logOut = async (req, res) => {
   try {
     return res
       .status(200)
-      .cookie("token", "",{httpOnly:true, expires: new Date(0),sameSite: "strict", })
+      .cookie("token", "", {
+        httpOnly: true,
+        expires: new Date(0),
+        sameSite: "strict",
+      })
       .json({ message: "Logout successfully", success: true });
   } catch (error) {
     console.log(error);
@@ -101,7 +109,7 @@ const updateProfile = async (req, res) => {
     const file = req.file;
     // setting up file here using cloudinary
     let skillsArray;
-    if (skillsArray) {
+    if (skills) {
       skillsArray = skills.split(",");
     }
     const userId = req.id;
