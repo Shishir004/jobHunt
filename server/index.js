@@ -4,7 +4,6 @@ const dotenv=require('dotenv')
 dotenv.config({});
 const cors=require('cors');
 const app=express();
-const multer=require('multer');
 const db=require('./utils/db');
 const userRoutes=require('./routes/user.routes')
 const companyRoutes=require('./routes/comapny.routes')

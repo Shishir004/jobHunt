@@ -1,6 +1,8 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const getDatauri = require("../utils/datauri");
+const cloudinary = require("../utils/cloudinary");
 const registerUser = async (req, res) => {
   try {
     const { fullName, email, phoneNumber, password, role } = req.body;
@@ -22,6 +24,14 @@ const registerUser = async (req, res) => {
         .status(409)
         .json({ message: "Phone number already registered" });
     }
+    const isFile=req.file;
+    let profilePhotoUrl  ='';
+    if(isFile)
+    {
+      const fileUri=getDatauri(isFile);
+      const cloudResponse=await cloudinary.uploader.upload(fileUri.content);
+      profilePhotoUrl=cloudResponse.secure_url;
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
     await User.create({
       fullName,
@@ -29,8 +39,13 @@ const registerUser = async (req, res) => {
       phoneNumber,
       password: hashedPassword,
       role,
+      profile:{
+        profilePhoto:profilePhotoUrl
+      }
     });
-    return res.status(200).json({ message: "user created successfully" , success: true});
+    return res
+      .status(200)
+      .json({ message: "user created successfully", success: true });
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
@@ -107,33 +122,58 @@ const updateProfile = async (req, res) => {
   try {
     const { fullName, email, phoneNumber, bio, skills } = req.body;
     const file = req.file;
-    // setting up file here using cloudinary
-    let skillsArray;
-    if (skills) {
-      skillsArray = skills.split(",");
-    }
+
     const userId = req.id;
     let user = await User.findById(userId);
     if (!user) {
       return res
         .status(400)
-        .json({ message: "user not found", success: false });
+        .json({ message: "User not found", success: false });
     }
+
+    // ✅ If file exists, upload to Cloudinary
+    if (file) {
+      const fileUri = getDatauri(file);
+      const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+        resource_type: "raw",
+      });
+
+      if (cloudResponse) {
+        user.profile.resume = cloudResponse.secure_url;
+        user.profile.resumeName = file.originalname;
+      }
+    }
+
+    // ✅ Parse skills
+    let skillsArray;
+    if (skills) {
+      try {
+        skillsArray = JSON.parse(skills);
+      } catch (err) {
+        return res
+          .status(400)
+          .json({ message: "Invalid skills format", success: false });
+      }
+    }
+
+    // ✅ Update other fields
     if (fullName) user.fullName = fullName;
     if (email) user.email = email;
     if (phoneNumber) user.phoneNumber = phoneNumber;
     if (bio) user.bio = bio;
-    if (skills) user.skills = skillsArray;
-    // resume here
+    if (skillsArray) user.skills = skillsArray;
+
     await user.save();
+
     return res.status(200).json({
       message: "Profile updated successfully",
       user,
       success: true,
     });
   } catch (error) {
-    console.log(error);
-    res.status(400).json({ message: "failed to update data" });
+    console.error("Update profile error:", error);
+    return res.status(500).json({ message: "Failed to update data", success: false });
   }
 };
+
 module.exports = { registerUser, loginUser, logOut, updateProfile };

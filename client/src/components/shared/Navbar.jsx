@@ -1,10 +1,28 @@
-import React, { useState } from 'react';
-import AvatarDropdown from '../shadcn/Avatar';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import React, { useState } from "react";
+import AvatarDropdown from "../shadcn/Avatar";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { setUser } from '../../redux/authslice'
 
 const Navbar = () => {
-    const {user}=useSelector((state)=>state.auth);
+  const navigate = useNavigate();
+  const dispatch=useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const deleteData = async () => {
+    try {
+      const res = await axios.delete("http://localhost:3000/api/user/logout");
+      console.log(res);
+      if(res.data.success)
+      {
+        dispatch(setUser(null));
+        navigate('/')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
   return (
     // Main navbar container with dark background and bottom border
     <div className="bg-gray-900 text-white shadow-lg border-b border-gray-700">
@@ -18,49 +36,49 @@ const Navbar = () => {
         {/* Navigation Links */}
         <ul className="flex font-semibold items-center gap-8 text-gray-300">
           <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
-            <Link to='/'>Home</Link>
+            <Link to="/">Home</Link>
           </li>
           <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
-            <Link to='/all/jobs'>Job</Link>
+            <Link to="/all/jobs">Job</Link>
           </li>
           <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
-            <Link to='/browse'>Browse</Link>
+            <Link to="/browse">Browse</Link>
           </li>
         </ul>
 
         {user ? (
           // Logged-in user view (Avatar)
           <div>
-            <AvatarDropdown src="https://i.pravatar.cc/150?img=5" fallback="ST">
+            <AvatarDropdown src={user?.profile?.profilePhoto} fallback="ST">
               <div className="p-2">
-                 <h4 className="font-medium text-sm my-2 ml-2 text-white">shishirtiwari004@gmail.com</h4>
-                 <ul className="text-sm text-gray-300">
-                  <Link to='/profile'>
+                <h4 className="font-medium text-sm my-2 ml-2 text-white">
+                  {user?.email}
+                </h4>
+                <ul className="text-sm text-gray-300">
+                  <Link to="/profile">
                     <li className="px-4 py-2 hover:bg-gray-700 rounded-md cursor-pointer">
-                     Profile
-                   </li>
+                      Profile
+                    </li>
                   </Link>
-                   <li className="px-4 py-2 hover:bg-gray-700 rounded-md cursor-pointer">
-                     Settings
-                   </li>
-                   <li className="px-4 py-2 hover:bg-gray-700 text-red-500 rounded-md cursor-pointer">
-                     Logout
-                   </li>
-                 </ul>
+                  <li onClick={deleteData} className="px-4 py-2 hover:bg-gray-700 text-red-500 rounded-md cursor-pointer">
+                    Logout
+                  </li>
+                </ul>
               </div>
             </AvatarDropdown>
           </div>
         ) : (
           // Logged-out user view (Buttons)
           <div className="flex gap-4">
-            
-              <Link to='/login'>
-              <button className="px-5 py-2 font-semibold rounded-lg bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-300">Login</button>
-              </Link>
-              <Link to='/signup'>
-            <button className="px-5 py-2 font-semibold rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-500 focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105">
-              Signup
-            </button>
+            <Link to="/login">
+              <button className="px-5 py-2 font-semibold rounded-lg bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-300">
+                Login
+              </button>
+            </Link>
+            <Link to="/signup">
+              <button className="px-5 py-2 font-semibold rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-500 focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105">
+                Signup
+              </button>
             </Link>
           </div>
         )}

@@ -30,35 +30,43 @@ const Signup = () => {
   // In your Signup.jsx component
 
   const onSubmitHandler = async (e) => {
-    e.preventDefault();
-    const finalData = {
-      ...input,
-      role: selectedRole,
-    };
+  e.preventDefault();
 
-    try {
-      // Send the finalData object directly as JSON
-      const res = await axios.post(
-        "http://localhost:3000/api/user/register",
-        finalData,
-        {
-          // The header will be 'application/json' by default, which is what you want
-          withCredentials: true,
-        }
-      );
+  const formData = new FormData();
+  formData.append("fullName", input.fullName);
+  formData.append("email", input.email);
+  formData.append("password", input.password);
+  formData.append("phoneNumber", input.phoneNumber);
+  formData.append("role", selectedRole);
+  if (input.file) {
+    formData.append("file", input.file); // ⬅️ This must match multer's `.single("file")`
+  }
 
-      if (res.data.success) {
-        showToast("Registration successful! Redirecting...", "success");
-        navigate("/login");
+  try {
+    const res = await axios.post(
+      "http://localhost:3000/api/user/register",
+      formData,
+      {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data", // ⬅️ Crucial for file upload
+        },
       }
-    } catch (error) {
-      console.log(error);
-      showToast(
-        error.response?.data?.message || "Registration failed.",
-        "error"
-      );
+    );
+
+    if (res.data.success) {
+      showToast("Registration successful! Redirecting...", "success");
+      navigate("/login");
     }
-  };
+  } catch (error) {
+    console.error(error);
+    showToast(
+      error.response?.data?.message || "Registration failed.",
+      "error"
+    );
+  }
+};
+
   return (
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4 font-sans">
       <div className="w-full max-w-md">
