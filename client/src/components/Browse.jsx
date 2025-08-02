@@ -1,26 +1,25 @@
 import React from 'react';
-import Job from './Job';
-import { jobsData } from './Job'; 
-const randomJobs = [1, 2, 45];
+import { useSelector } from 'react-redux'; // Import useSelector
+import Job from './Job';                     // This is your component for a single job card
 
 const Browse = () => {
+  // Get the array of jobs from your Redux store
+  const { allJobs } = useSelector((store) => store.job);
+
   return (
-    <>
-      <div className="max-w-7xl mx-auto my-10">
-        <h1 className="font-bold text-xl my-10">
-          Search Results ({randomJobs.length})
-        </h1>
-        <div className="grid grid-cols-3 gap-4">
-          {
-            jobsData.map((job) => {
-              return (
-                <Job key={job.id} job={job} />
-              )
-            })
-          }
-        </div>
+    <div className="max-w-7xl mx-auto my-10">
+      <h1 className="font-bold text-xl my-10">
+        {/* Use the actual array's length */}
+        Search Results ({allJobs ? allJobs.length : 0})
+      </h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Map over the 'allJobs' array, not the 'Job' component */}
+        {allJobs && allJobs.map((job) => (
+          // For each job object in the array, render the Job component
+          <Job key={job._id} job={job} />
+        ))}
       </div>
-    </>
+    </div>
   );
 };
 

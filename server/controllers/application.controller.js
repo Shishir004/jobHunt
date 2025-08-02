@@ -1,34 +1,47 @@
 const Application=require('../models/application.model')
 const Job=require('../models/job.model')
-const applyJob=async (req,res)=>{
-    try {
-        const userId=req.id;
-        const jobId=req.params.id;
-        if(!jobId)
-        {
-            return res.status(404).json({ message: "job id not found",success:false});
-        }
-        // check weather it is applied or not
-        const isApplied=await Application.findOne({job:jobId,applicant:userId});
-        if(isApplied)
-        {
-            return res.status(400).json({message:"you have already applied",success:false})
-        }
-        const job=await Job.findById(jobId);
-        const createApplicantion=await Application.create({
-            job:jobId,
-            applicant:userId
-        })
-        job.applications.push(createApplicantion._id);
-        await job.save();
-        return res.status(200).json({ message: "job applied successfully",success:true});
-    } catch (error) {
-        console.log(error)
+const applyJob = async (req, res) => {
+    console.log("applyJob triggered ✅");
+console.log("req.id:", req.id);
+console.log("req.body:", req.body);
+  try {
+    const userId = req.id;
+    const jobId = req.params.id;
+
+    if (!jobId) {
+      return res.status(404).json({ message: "Job ID not found", success: false });
     }
-}
+
+    // Check if already applied
+    const isApplied = await Application.findOne({ job: jobId, applicant: userId });
+    if (isApplied) {
+      return res.status(400).json({ message: "You have already applied", success: false });
+    }
+
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(404).json({ message: "Job not found", success: false });
+    }
+
+    const createApplication = await Application.create({
+      job: jobId,
+      applicant: userId,
+    });
+
+    job.applications.push(createApplication._id);
+    await job.save();
+
+    return res.status(200).json({ message: "Job applied successfully", success: true });
+  } catch (error) {
+    console.error("❌ applyJob Error:", error);
+    return res.status(500).json({ message: "Internal Server Error", success: false });
+  }
+};
+
 const getAllAppliedJobs=async(req,res)=>{
     try {
         const userId=req.id;
+        nsole.log("User ID from token:", req.id);
         const application=await Application.find({applicant:userId}).sort({createdAt:-1})
         .populate({path:'job',populate:{path:'companyId'}})
         if(!application ||  application.length === 0)
