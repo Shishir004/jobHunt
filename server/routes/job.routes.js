@@ -6,4 +6,5 @@ router.post("/postJob",isAuthenticated,postJob);
 router.get("/getAllJobs",isAuthenticated,getAllJobs);
 router.get("/getAllJobsById/:id",isAuthenticated,getAllJobsById)
 router.get("/getAdminJobs",isAuthenticated,getAdminJobs)
+
 module.exports=router;

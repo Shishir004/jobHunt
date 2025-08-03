@@ -9,6 +9,9 @@ import AllJobs from "./components/AllJobs.jsx";
 import Browse from "./components/Browse.jsx";
 import Profile from "./components/Profile.jsx";
 import JobDescription from "./components/JobDescription.jsx";
+import Company from "./components/Company.jsx";
+import NewComapny from "./components/NewComapny.jsx";
+import SingleCompany from "./components/SingleCompany.jsx";
 function App() {
   const userProfile = {
   fullName: 'Alex Doe',
@@ -31,6 +34,9 @@ function App() {
         <Route path='/browse' element={<Browse/>}/>
         <Route path='/profile' element={<Profile profile={userProfile}/>}/>
         <Route path='/description/:id' element={<JobDescription/>}/>
+        <Route path='/admin/company' element={<Company/>} />
+        <Route path='/create/new/Company' element={<NewComapny/>} />
+        <Route path='/create/new/Company/:id' element={<SingleCompany/>} />
         </Routes>
       </Provider> 
       </BrowserRouter>

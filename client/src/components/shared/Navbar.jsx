@@ -3,23 +3,22 @@ import AvatarDropdown from "../shadcn/Avatar";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { setUser } from '../../redux/authslice'
+import { setUser } from "../../redux/authslice";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const deleteData = async () => {
     try {
       const res = await axios.delete("http://localhost:3000/api/user/logout");
       console.log(res);
-      if(res.data.success)
-      {
+      if (res.data.success) {
         dispatch(setUser(null));
-        navigate('/')
+        navigate("/");
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -34,17 +33,28 @@ const Navbar = () => {
           </h1>
         </div>
         {/* Navigation Links */}
-        <ul className="flex font-semibold items-center gap-8 text-gray-300">
-          <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
-            <Link to="/">Home</Link>
-          </li>
-          <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
-            <Link to="/all/jobs">Job</Link>
-          </li>
-          <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
-            <Link to="/browse">Browse</Link>
-          </li>
-        </ul>
+        {user?.role == "STUDENT" ? (
+          <ul className="flex font-semibold items-center gap-8 text-gray-300">
+            <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
+              <Link to="/">Home</Link>
+            </li>
+            <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
+              <Link to="/all/jobs">Job</Link>
+            </li>
+            <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
+              <Link to="/browse">Browse</Link>
+            </li>
+          </ul>
+        ) : (
+          <ul className="flex font-semibold items-center gap-8 text-gray-300">
+            <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
+              <Link to="/admin/company">Companies</Link>
+            </li>
+            <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
+              <Link to="/admin/jobs">Jobs</Link>
+            </li>
+          </ul>
+        )}
 
         {user ? (
           // Logged-in user view (Avatar)
@@ -55,12 +65,15 @@ const Navbar = () => {
                   {user?.email}
                 </h4>
                 <ul className="text-sm text-gray-300">
-                  <Link to="/profile">
+                  {user?.role=="STUDENT"?<Link to="/profile">
                     <li className="px-4 py-2 hover:bg-gray-700 rounded-md cursor-pointer">
                       Profile
                     </li>
-                  </Link>
-                  <li onClick={deleteData} className="px-4 py-2 hover:bg-gray-700 text-red-500 rounded-md cursor-pointer">
+                  </Link>:""}
+                  <li
+                    onClick={deleteData}
+                    className="px-4 py-2 hover:bg-gray-700 text-red-500 rounded-md cursor-pointer"
+                  >
                     Logout
                   </li>
                 </ul>
