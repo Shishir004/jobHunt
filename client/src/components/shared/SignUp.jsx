@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../shadcn/ToastContext";
 import AttractiveLoader from "../shadcn/Loader";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 const Signup = () => {
   const [selectedRole, setSelectedRole] = useState("");
   const [fileName, setFileName] = useState("No file chosen");
@@ -17,7 +17,8 @@ const Signup = () => {
     role: "",
     file: "",
   });
-  const {loading}=useSelector((state)=>state.auth)
+  const dispatch=useDispatch();
+  const { loading } = useSelector((state) => state.auth);
   const onChangeHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
@@ -30,42 +31,42 @@ const Signup = () => {
   // In your Signup.jsx component
 
   const onSubmitHandler = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const formData = new FormData();
-  formData.append("fullName", input.fullName);
-  formData.append("email", input.email);
-  formData.append("password", input.password);
-  formData.append("phoneNumber", input.phoneNumber);
-  formData.append("role", selectedRole);
-  if (input.file) {
-    formData.append("file", input.file); // ⬅️ This must match multer's `.single("file")`
-  }
-
-  try {
-    const res = await axios.post(
-      "http://localhost:3000/api/user/register",
-      formData,
-      {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data", // ⬅️ Crucial for file upload
-        },
-      }
-    );
-
-    if (res.data.success) {
-      showToast("Registration successful! Redirecting...", "success");
-      navigate("/login");
+    const formData = new FormData();
+    formData.append("fullName", input.fullName);
+    formData.append("email", input.email);
+    formData.append("password", input.password);
+    formData.append("phoneNumber", input.phoneNumber);
+    formData.append("role", selectedRole);
+    if (input.file) {
+      formData.append("file", input.file); // ⬅️ This must match multer's `.single("file")`
     }
-  } catch (error) {
-    console.error(error);
-    showToast(
-      error.response?.data?.message || "Registration failed.",
-      "error"
-    );
-  }
-};
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/api/user/register",
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data", // ⬅️ Crucial for file upload
+          },
+        }
+      );
+
+      if (res.data.success) {
+        showToast("Registration successful! Redirecting...", "success");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error(error);
+      showToast(
+        error.response?.data?.message || "Registration failed.",
+        "error"
+      );
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4 font-sans">
@@ -358,7 +359,9 @@ const Signup = () => {
 
             {/* Signup Button */}
             {loading ? (
+              <div className="flex items-center justify-center w-full py-10">
                 <AttractiveLoader />
+              </div>
             ) : (
               <button
                 type="submit"

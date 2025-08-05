@@ -12,6 +12,9 @@ import JobDescription from "./components/JobDescription.jsx";
 import Company from "./components/Company.jsx";
 import NewComapny from "./components/NewComapny.jsx";
 import SingleCompany from "./components/SingleCompany.jsx";
+import AdminJobs from "./components/AdminJobs.jsx";
+import PostJob from "./components/PostJob.jsx";
+import TotalApplicants from "./components/TotalApplicants.jsx";
 function App() {
   const userProfile = {
   fullName: 'Alex Doe',
@@ -37,6 +40,9 @@ function App() {
         <Route path='/admin/company' element={<Company/>} />
         <Route path='/create/new/Company' element={<NewComapny/>} />
         <Route path='/create/new/Company/:id' element={<SingleCompany/>} />
+        <Route path='/admin/jobs/create' element={<AdminJobs/>} />
+        <Route path='/admin/jobs/post' element={<PostJob/>} />
+        <Route path='/total/applicants/:id' element={<TotalApplicants/>} />
         </Routes>
       </Provider> 
       </BrowserRouter>

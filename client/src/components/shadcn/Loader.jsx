@@ -5,6 +5,7 @@ import React from 'react';
  * This provides a more visually interesting loading state than a simple spinner.
  */
 const AttractiveLoader = () => {
+  console.log("AttractiveLoader mounted");
   return (
     <>
       {/* We inject the keyframe animation styles directly into the document head. */}

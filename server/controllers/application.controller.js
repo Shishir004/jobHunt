@@ -31,7 +31,7 @@ console.log("req.body:", req.body);
     job.applications.push(createApplication._id);
     await job.save();
 
-    return res.status(200).json({ message: "Job applied successfully", success: true });
+    return res.status(200).json({ message: "Job applied successfully",job, success: true });
   } catch (error) {
     console.error("❌ applyJob Error:", error);
     return res.status(500).json({ message: "Internal Server Error", success: false });
@@ -54,19 +54,27 @@ const getAllAppliedJobs=async(req,res)=>{
     }
 }
 // admin will found how many users have applied
-const getApplicants=async(req,res)=>{
-    try {
-        const jobId=req.params.id;
-        const job=await Job.findById(jobId).populate({path:'applications',sort:{createdAt:-1},populate:{path:'applicant'}})
-        if(!job)
-        {
-             return res.status(400).json({message:"not found",success:false})
-        }
-        return res.status(200).json({message:"applicants are",job})
-    } catch (error) {
-        console.log(error);
+const getApplicants = async (req, res) => {
+  try {
+    const jobId = req.params.id;
+
+    const job = await Job.findById(jobId).populate({
+      path: 'applications',
+      options: { sort: { createdAt: -1 } },
+      populate: { path: 'applicant' }
+    });
+
+    if (!job) {
+      return res.status(400).json({ message: "Job not found", success: false });
     }
-}
+
+    return res.status(200).json({ message: "Applicants fetched", success: true, job });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error", success: false });
+  }
+};
+
 const updateStatus=async(req,res)=>{
     try {
         const {status}=req.body;

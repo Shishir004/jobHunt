@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import authSlice from "./authslice.js";
 import jobSlice from "./jobslice.js";
 import companySlice from './companySlice.js'
+import applicationSlice from './applicantsSlice.js'
 
 // Load state from localStorage
 const loadState = () => {
@@ -31,7 +32,8 @@ const store = configureStore({
   reducer: {
     auth: authSlice,
     job: jobSlice,
-    company:companySlice
+    company:companySlice,
+    applicants:applicationSlice
   },
   preloadedState: loadState(), // Load persisted state on startup
 });

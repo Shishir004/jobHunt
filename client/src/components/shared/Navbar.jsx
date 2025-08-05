@@ -51,7 +51,7 @@ const Navbar = () => {
               <Link to="/admin/company">Companies</Link>
             </li>
             <li className="hover:text-blue-400 transition-colors duration-300 cursor-pointer">
-              <Link to="/admin/jobs">Jobs</Link>
+              <Link to="/admin/jobs/create">Jobs</Link>
             </li>
           </ul>
         )}

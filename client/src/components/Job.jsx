@@ -33,9 +33,10 @@ const Job = ({ job }) => {
       <p className="text-sm text-gray-400 mb-2">{postedDaysAgo}</p>
 
       {/* Company Name */}
-      <h3 className="text-blue-400 font-semibold text-sm">
+      <h3 className="text-blue-400 font-semibold text-sm px-20">
         {companyId?.name || 'Unknown Company'}
       </h3>
+      <img className='size-10  rounded-3xl'  src={job?.companyId?.logo} alt='logo'/>
       <p className="text-gray-400 text-xs mb-2">{location || 'Unknown Location'}</p>
 
       {/* Job Title */}

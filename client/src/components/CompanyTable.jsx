@@ -2,7 +2,6 @@ import axios from "axios";
 import { MoreHorizontal } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
 
 const CompaniesTable = () => {
   const [openDropdownIndex, setOpenDropdownIndex] = useState(null);

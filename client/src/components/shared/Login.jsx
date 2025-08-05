@@ -13,6 +13,7 @@ const Login = () => {
     role: "",
   });
   const { loading } = useSelector((store) => store.auth);
+  console.log("LOADING STATE:", loading);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { showToast } = useToast();
@@ -44,8 +45,9 @@ const Login = () => {
       dispatch(setUser(res.data.user))
 
       if (res.data.success) {
-        navigate("/");
+        // navigate("/");
         showToast("This is a success toast!", "success", res.data.message);
+        navigate("/");
       } else {
         showToast("This is a error toast!", "success", res.data.message);
       }
@@ -227,15 +229,18 @@ const Login = () => {
 
             {/* Signup Button */}
             {loading ? (
-                <AttractiveLoader />
-            ) : (
-              <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-500 focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105"
-              >
-                login
-              </button>
-            )}
+  <div className="flex items-center justify-center w-full py-10">
+    <AttractiveLoader />
+  </div>
+) : (
+  <button
+    type="submit"
+    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-500 focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105"
+  >
+    login
+  </button>
+)}
+
           </form>
 
           {/* Login Link */}
