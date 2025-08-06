@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import { setSearchForTheJobUsingKeyword } from '../redux/jobslice';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 const filterData = [
   {
     filterType: "Location",
-    array: ["Dehradun", "Bangalore", "Delhi"]
+    array: ["Dehradun", "Bangalore", "Delhi","Ahemdabad","kolkata","haryana","mumbai","Chandigarh"]
   },
   {
     filterType: "Industry", 
@@ -13,6 +15,7 @@ const filterData = [
     filterType: "Salary",
     array: ["5-10 LPA", "10-20 LPA", "20+ LPA"] 
   }
+
 ];
 
 const FilterCard = () => {
@@ -24,6 +27,10 @@ const FilterCard = () => {
             [type]: value
         }));
     };
+    const dispatch=useDispatch();
+    useEffect(()=>{
+        dispatch(setSearchForTheJobUsingKeyword(selectedFilters))
+    },[selectedFilters])
 
     return (
         <div className="bg-[#161B22] rounded-xl shadow-lg p-6 border border-gray-700 h-fit">

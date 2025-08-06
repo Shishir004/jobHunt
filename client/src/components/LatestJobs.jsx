@@ -2,12 +2,14 @@
 import React from "react";
 import JobCard from "./JobCard";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const LatestJobs = () => {
   const { allJobs } = useSelector((store) => store.job);
+  const navigate=useNavigate();
 
   return (
-    <div className="bg-slate-900 text-white py-20">
+    <div className="bg-slate-900 text-white py-20" onClick={()=>{navigate('/all/jobs')}}>
       <div className="container mx-auto px-4">
         <h1 className="text-4xl font-bold text-center mb-12">
           <span className="bg-gradient-to-r from-purple-500 to-indigo-600 text-transparent bg-clip-text">
