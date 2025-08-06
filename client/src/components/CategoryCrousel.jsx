@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-
+import { setSearchForTheJobUsingKeyword } from '../redux/jobslice';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 // SVG Icon for carousel arrows
 const ChevronLeftIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -34,6 +36,12 @@ const CategoryCrousel = () => {
   const handlePrev = () => {
     setCurrentIndex(prevIndex => Math.max(prevIndex - slideBy, 0));
   };
+  const dispatch=useDispatch();
+  const navigate=useNavigate();
+   const searchJobhandler=(query)=>{
+      dispatch(setSearchForTheJobUsingKeyword(query))
+      navigate('/browse')
+    }
   return (
     // Main container with a dark background
     <div className="bg-slate-900 min-h-20 font-sans text-white">
@@ -59,6 +67,7 @@ const CategoryCrousel = () => {
                     >
                         {categories.map((category, index) => (
                             <button 
+                            onClick={()=>{searchJobhandler(category)}}
                                 key={index} 
                                 className="flex-shrink-0 w-1/4 capitalize px-5 py-2 text-sm font-medium text-gray-300 bg-slate-800 border border-slate-700 rounded-full hover:bg-slate-700 hover:text-white transition-colors duration-300"
                             >

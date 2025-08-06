@@ -41,7 +41,7 @@ console.log("req.body:", req.body);
 const getAllAppliedJobs=async(req,res)=>{
     try {
         const userId=req.id;
-        nsole.log("User ID from token:", req.id);
+        console.log("User ID from token:", req.id);
         const application=await Application.find({applicant:userId}).sort({createdAt:-1})
         .populate({path:'job',populate:{path:'companyId'}})
         if(!application ||  application.length === 0)
@@ -90,12 +90,12 @@ const updateStatus=async(req,res)=>{
             return res.status(400).json({message:"not found",success:false})
         }
         // update the status
-        application.status=status.toLowerCase();
+        application.status=status
         await application.save();
         return res.status(200).json({message:"update successfully",application})
 
     } catch (error) {
-        
+        console.log(error)
     }
 }
 module.exports={applyJob,getAllAppliedJobs,getApplicants,updateStatus}

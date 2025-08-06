@@ -1,3 +1,7 @@
+import { useEffect } from "react";
+import useGetappliedJobs from "../hooks/useGetAlluserAppliedJobs";
+import { useSelector } from "react-redux";
+
 const CheckCircleIcon = ({ size }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>;
 const XCircleIcon = ({ size }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>;
 const ClockIcon = ({ size }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
@@ -34,31 +38,47 @@ const Badge = ({ status }) => {
   );
 };
 
-const AppliedTable = ({ jobs }) => {
+const AppliedTable = () => {
+  useGetappliedJobs();
+  const { allAppliedJobs } = useSelector((store) => store.job);
+  // Show a loading or empty message until data arrives
+  if (allAppliedJobs.length === 0) {
+    return <div className="text-white mt-10 text-center">Fetching your applied jobs...</div>;
+  }
+
   return (
     <div className="mt-12 w-full">
       <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700/50 overflow-hidden">
         <div className="overflow-x-auto">
           <Table className="w-full text-left min-w-[600px]">
             <TableCaption className="p-5 text-lg font-semibold text-left text-white bg-gray-900/50">
-                A list of your applied jobs
+              A list of your applied jobs
             </TableCaption>
             <TableHeader>
               <TableRow>
-                <TableHead className="p-5 text-sm font-semibold text-gray-400 tracking-wider"><CalendarIcon size={16} className="inline mr-2"/>Date</TableHead>
-                <TableHead className="p-5 text-sm font-semibold text-gray-400 tracking-wider"><BriefcaseIcon size={16} className="inline mr-2"/>Job Role</TableHead>
-                <TableHead className="p-5 text-sm font-semibold text-gray-400 tracking-wider"><BuildingIcon size={16} className="inline mr-2"/>Company</TableHead>
+                <TableHead className="p-5 text-sm font-semibold text-gray-400 tracking-wider"><CalendarIcon size={16} className="inline mr-2" />Date</TableHead>
+                <TableHead className="p-5 text-sm font-semibold text-gray-400 tracking-wider"><BriefcaseIcon size={16} className="inline mr-2" />Job Role</TableHead>
+                <TableHead className="p-5 text-sm font-semibold text-gray-400 tracking-wider"><BuildingIcon size={16} className="inline mr-2" />Company</TableHead>
                 <TableHead className="p-5 text-sm font-semibold text-gray-400 tracking-wider">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="divide-y divide-gray-800">
-              {jobs.map((job) => (
-                <TableRow key={job.id} className="hover:bg-gray-900/50 transition-colors duration-200">
-                  <TableCell className="p-5 text-gray-300">{job.date}</TableCell>
-                  <TableCell className="p-5 font-medium text-white">{job.role}</TableCell>
-                  <TableCell className="p-5 text-gray-300">{job.company}</TableCell>
+              {allAppliedJobs.map((j) => (
+                <TableRow
+                  key={j?._id}
+                  className="hover:bg-gray-900/50 transition-colors duration-200"
+                >
+                  <TableCell className="p-5 text-gray-300">
+                    {j?.createdAt?.split("T")[0] || "N/A"}
+                  </TableCell>
+                  <TableCell className="p-5 font-medium text-white">
+                    {j?.job?.title || "N/A"}
+                  </TableCell>
+                  <TableCell className="p-5 text-gray-300">
+                    {j?.job?.companyId?.name || "N/A"}
+                  </TableCell>
                   <TableCell className="p-5">
-                    <Badge status={job.status} />
+                    <Badge status={j?.status} />
                   </TableCell>
                 </TableRow>
               ))}

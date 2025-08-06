@@ -3,7 +3,7 @@ const { applyJob, getAllAppliedJobs, getApplicants, updateStatus } = require('..
 const isAuthenticated = require('../midddlewares/isAuthenticated');
 const router=express.Router();
 router.post('/apply/job/:id',isAuthenticated,applyJob);
-router.get('/getAllAppliedJobs',getAllAppliedJobs);
+router.get('/getAllAppliedJobs',isAuthenticated,getAllAppliedJobs);
 router.get('/get/Applicants/:id',getApplicants);
-router.put('/update/status/:id',updateStatus);
+router.post('/update/status/:id',updateStatus);
 module.exports=router;

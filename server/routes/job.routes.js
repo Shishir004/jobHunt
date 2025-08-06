@@ -3,7 +3,7 @@ const { postJob, getAllJobs, getAllJobsById, getAdminJobs } = require('../contro
 const isAuthenticated = require('../midddlewares/isAuthenticated');
 const router=express.Router();
 router.post("/postJob",isAuthenticated,postJob);
-router.get("/getAllJobs",isAuthenticated,getAllJobs);
+router.get("/getAllJobs",getAllJobs);
 router.get("/getAllJobsById/:id",isAuthenticated,getAllJobsById)
 router.get("/getAdminJobs",isAuthenticated,getAdminJobs)
 

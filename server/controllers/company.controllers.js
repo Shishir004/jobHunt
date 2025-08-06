@@ -61,27 +61,47 @@ const updateCompany = async (req, res) => {
   try {
     const { name, description, website, location } = req.body;
     const file = req.file;
-    // cloudinary
-    const fileUri=getDatauri(file);
-    const cloudResponse=await cloudinary.uploader.upload(fileUri.content);
-    const logo=cloudResponse.secure_url;
-    if (!name || !description) {
-      return res.status(400).json({ message: "Coudn't update Information" });
+
+    let logo;
+
+    // ✅ only upload if file exists
+    if (file) {
+      const fileUri = getDatauri(file);
+      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+      logo = cloudResponse.secure_url;
     }
-    const data = { name, description, website, location ,logo };
+
+    if (!name || !description) {
+      return res.status(400).json({ message: "Couldn't update Information" });
+    }
+
+    // Include logo only if available
+    const data = {
+      name,
+      description,
+      website,
+      location,
+      ...(logo && { logo }),
+    };
+
     const updatedData = await Company.findByIdAndUpdate(req.params.id, data, {
       new: true,
     });
+
     if (!updatedData) {
       return res.status(400).json({ message: "Couldn't update the data" });
     }
-    return res
-      .status(200)
-      .json({ message: "data updated successfully", updatedData });
+
+    return res.status(200).json({
+      message: "Data updated successfully",
+      updatedData,
+    });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 const deleteCompany=async (req,res)=>{
   const companyId=req.params.id;
   if(!companyId)

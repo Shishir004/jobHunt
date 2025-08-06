@@ -1,4 +1,7 @@
-import React from 'react'
+import { setSearchForTheJobUsingKeyword } from '../redux/jobslice';
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 // SVG Icon for the search button
 const SearchIcon = () => (
@@ -18,6 +21,14 @@ const SearchIcon = () => (
   </svg>
 );
 const HeroSection = () => {
+  const [input,setInput]=useState('');
+  const navigate=useNavigate();
+  const dispatch=useDispatch();
+  const searchJobhandler=(e)=>{
+    e.preventDefault();
+    dispatch(setSearchForTheJobUsingKeyword(input))
+    navigate('/browse')
+  }
   return (
     // Main container with a dark background, covering the full screen
     <div className="bg-slate-900 min-h-screen flex items-center justify-center font-sans p-4">
@@ -50,10 +61,12 @@ const HeroSection = () => {
           <div className="relative flex items-center bg-slate-800 rounded-full shadow-lg border border-slate-700 focus-within:ring-2 focus-within:ring-purple-500 transition-all duration-300">
             <input
               type="text"
+              onChange={(e)=>setInput(e.target.value)}
               placeholder="Find your dream job..."
               className="w-full bg-transparent text-white placeholder-gray-500 py-4 pl-6 pr-16 rounded-full focus:outline-none"
             />
             <button
+            onClick={searchJobhandler}
               type="submit"
               className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-indigo-500 transition-colors duration-300"
               aria-label="Search"

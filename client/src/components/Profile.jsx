@@ -2,38 +2,7 @@ import React, { useState } from "react";
 import AppliedTable from "./Table";
 import UpdateProfile from "./UpdateProfile";
 import { useSelector } from "react-redux";
-// table content
-const appliedJobsData = [
-  {
-    id: 1,
-    date: "2024-07-17",
-    role: "Frontend Developer",
-    company: "Google",
-    status: "Selected",
-  },
-  {
-    id: 2,
-    date: "2024-07-15",
-    role: "Full Stack Engineer",
-    company: "Microsoft",
-    status: "Interviewing",
-  },
-  {
-    id: 3,
-    date: "2024-07-12",
-    role: "React Native Developer",
-    company: "Meta",
-    status: "Rejected",
-  },
-  {
-    id: 4,
-    date: "2024-07-10",
-    role: "UI/UX Designer",
-    company: "Apple",
-    status: "In Review",
-  },
-];
-
+import useGetappliedJobs from "../hooks/useGetAlluserAppliedJobs";
 // --- SVG Icon Components ---
 const UserIcon = ({ className, size }) => (
   <svg
@@ -133,6 +102,7 @@ const SkillTag = ({ skill }) => (
 );
 
 const Profile = ({ profile }) => {
+  useGetappliedJobs();
   const [open, setOpen] = useState(false);
   const { user } = useSelector((store) => store.auth);
   // const handleClickOutside = (event) => {
@@ -216,7 +186,7 @@ const Profile = ({ profile }) => {
           {/* </a> */}
         </div>
       </div>
-      <AppliedTable jobs={appliedJobsData} />
+      <AppliedTable/>
       <UpdateProfile open={open} setOpen={setOpen} />
     </div>
   );

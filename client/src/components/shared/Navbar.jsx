@@ -28,9 +28,9 @@ const Navbar = () => {
       <div className="flex items-center justify-between mx-auto max-w-7xl h-20 px-4">
         {/* Logo */}
         <div>
-          <h1 className="text-3xl font-bold">
+          <button className="text-3xl font-bold" onClick={()=>{navigate('/')}}>
             Job<span className="text-blue-500">Portal</span>
-          </h1>
+          </button>
         </div>
         {/* Navigation Links */}
         {user?.role == "STUDENT" ? (

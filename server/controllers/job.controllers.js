@@ -27,27 +27,64 @@ const postJob=async (req,res)=>{
     }
 }
 // student
-const getAllJobs=async (req,res)=>{
-    try {
-        const keyword=req.query.keyword || "";
-        const query={
-            $or:[
-                {title:{$regex:keyword,$options:"i"}},
-                {description:{$regex:keyword,$options:"i"}}
-            ]
-        }
-        const jobs=await Job.find(query).populate({
-            path:"companyId"
-        }).sort({createdAt:-1});
-        if(jobs.length==0)
+// Assuming query params: ?keyword=...&location=...
+
+const getAllJobs = async (req, res) => {
+  try {
+    const { keyword = "", location, jobType, minSalary, industry } = req.query;
+
+    const query = {
+      $and: [
         {
-            return res.status(404).json({message:"job not found",success:false})
-        }
-        return res.status(200).json({message:"job",success:true,jobs})
-    } catch (error) {
-        console.log(error);
+          $or: [
+            { title: { $regex: keyword, $options: "i" } },
+            { description: { $regex: keyword, $options: "i" } },
+          ],
+        },
+      ],
+    };
+
+    if (location) {
+      query.$and.push({ location: { $regex: location, $options: "i" } });
     }
-}
+
+    if (jobType) {
+      query.$and.push({ jobType: jobType }); // Exact match
+    }
+
+    if (minSalary) {
+      query.$and.push({ Salary: { $gte: parseInt(minSalary) } });
+    }
+
+    // Note: For filtering by company.industry, use match after populate
+    const jobs = await Job.find(query)
+      .populate({
+        path: "companyId",
+      })
+      .sort({ createdAt: -1 });
+
+    // If industry filter exists, manually filter jobs after populate
+    const filteredJobs = industry
+      ? jobs.filter(
+          (job) =>
+            job.companyId?.industry &&
+            job.companyId.industry.toLowerCase() === industry.toLowerCase()
+        )
+      : jobs;
+
+    return res.status(200).json({
+      success: true,
+      message: filteredJobs.length
+        ? "Filtered jobs found"
+        : "No jobs match the filters",
+      jobs: filteredJobs,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 
 // student
 const getAllJobsById=async(req,res)=>{
