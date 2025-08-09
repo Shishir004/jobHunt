@@ -2,18 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AttractiveLoader from "./shadcn/Loader";
 import axios from "axios";
-// import { setSingleCompany } from "../redux/companySlice";
 import { useSelector } from "react-redux";
 import { setSingleCompany } from "../redux/companySlice";
-
-// It's assumed that Tailwind CSS is set up in your React project.
-// You can add this to your global CSS file if you haven't already:
-// @tailwind base;
-// @tailwind components;
-// @tailwind utilities;
-
-// Also, ensure the 'Inter' font is imported, for example in your index.html or global CSS.
-// <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 const BackArrowIcon = () => (
   <svg
@@ -57,75 +47,79 @@ const SingleCompany = () => {
     location: "",
     file: null,
   });
-  const {singleComapny}=useSelector((store)=>store.company)
+
+  const { singleComapny } = useSelector((store) => store.company);
+
   useEffect(() => {
     setIsLoaded(true);
   }, []);
+
   const navigate = useNavigate();
+  const params = useParams();
+  const companyid = params.id;
+
   const onChangeHandler = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
+
   const onFilehandler = (e) => {
     const file = e.target.files?.[0];
     setData({ ...data, file });
   };
-  const params = useParams();
-  const companyid = params.id;
+
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("description", data.description);
     formData.append("website", data.website);
-    if (data.file) {
-      formData.append("file", data.file);
-    }
+    formData.append("location", data.location);
+    if (data.file) formData.append("file", data.file);
+
     try {
       setLoading(true);
       const res = await axios.put(
         `http://localhost:3000/api/company/update/company/${companyid}`,
         formData,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { "Content-Type": "multipart/form-data" },
           withCredentials: true,
         }
       );
-      navigate('/admin/company');
+      navigate("/admin/company");
       setSingleCompany(res.data.company);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
-  useEffect(()=>{
+
+  useEffect(() => {
     setData({
-    name: singleComapny.name ||"",
-    description: singleComapny.description || "",
-    website: singleComapny.website || "",
-    location: singleComapny.location || "",
-    file: null,
-  })
-  },[singleComapny])
+      name: singleComapny.name || "",
+      description: singleComapny.description || "",
+      website: singleComapny.website || "",
+      location: singleComapny.location || "",
+      file: null,
+    });
+  }, [singleComapny]);
+
   return (
-    // Main container with a dark gradient background and decorative glow effects
     <div className="relative min-h-screen bg-gradient-to-br from-[#1a233a] to-[#101629] text-white font-['Inter'] p-4 sm:p-6 lg:p-8 overflow-hidden">
       {/* Background Glows */}
-      <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-600 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob"></div>
-      <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-600 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-      <div className="absolute bottom-0 -left-20 w-72 h-72 bg-pink-600 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+      <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-600 rounded-full blur-3xl opacity-20 animate-blob"></div>
+      <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-600 rounded-full blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+      <div className="absolute bottom-0 -left-20 w-72 h-72 bg-pink-600 rounded-full blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
 
       <div
         className={`relative max-w-4xl mx-auto transition-all duration-1000 ${
           isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}
       >
-        {/* Glassmorphism Form Card */}
-        <div className="bg-slate-900/40 backdrop-blur-lg border border-slate-700 rounded-2xl shadow-2xl p-8">
-          {/* Header section */}
-          <div className="flex items-center mb-10">
+        <div className="bg-slate-900/40 backdrop-blur-lg border border-slate-700 rounded-2xl shadow-2xl p-6 sm:p-8">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center mb-8 sm:mb-10 gap-4">
             <button
               onClick={() => navigate("/create/new/Company")}
               className="flex items-center text-gray-400 hover:text-white font-semibold transition-colors duration-300"
@@ -133,8 +127,8 @@ const SingleCompany = () => {
               <BackArrowIcon />
               Back
             </button>
-            <h1 className="text-4xl font-bold ml-6">
-              <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent mx-50">
+            <h1 className="text-3xl sm:text-4xl font-bold">
+              <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
                 Company Setup
               </span>
             </h1>
@@ -142,87 +136,76 @@ const SingleCompany = () => {
 
           {/* Form */}
           <form className="space-y-8" onSubmit={onSubmitHandler}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-              {/* Inputs with enhanced styling */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+              {/* Company Name */}
               <div>
-                <label
-                  htmlFor="company-name"
-                  className="block text-sm font-medium text-gray-300 mb-2"
-                >
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Company Name
                 </label>
                 <input
                   type="text"
-                  id="company-name"
                   name="name"
                   value={data.name}
                   onChange={onChangeHandler}
-                  className="w-full px-4 py-3 bg-slate-800/60 border border-slate-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300"
+                  className="w-full px-4 py-3 bg-slate-800/60 border border-slate-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 />
               </div>
 
+              {/* Description */}
               <div>
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-gray-300 mb-2"
-                >
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Description
                 </label>
                 <textarea
-                  id="description"
                   rows="3"
                   name="description"
                   value={data.description}
                   onChange={onChangeHandler}
-                  className="w-full px-4 py-3 bg-slate-800/60 border border-slate-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300"
+                  className="w-full px-4 py-3 bg-slate-800/60 border border-slate-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 ></textarea>
               </div>
 
+              {/* Website */}
               <div>
-                <label
-                  htmlFor="website"
-                  className="block text-sm font-medium text-gray-300 mb-2"
-                >
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Website
                 </label>
                 <input
                   type="text"
-                  id="website"
                   name="website"
                   value={data.website}
                   onChange={onChangeHandler}
-                  className="w-full px-4 py-3 bg-slate-800/60 border border-slate-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300"
+                  className="w-full px-4 py-3 bg-slate-800/60 border border-slate-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 />
               </div>
 
+              {/* Location */}
               <div>
-                <label
-                  htmlFor="location"
-                  className="block text-sm font-medium text-gray-300 mb-2"
-                >
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Location
                 </label>
                 <input
                   type="text"
-                  id="location"
                   name="location"
                   value={data.location}
                   onChange={onChangeHandler}
-                  className="w-full px-4 py-3 bg-slate-800/60 border border-slate-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300"
+                  className="w-full px-4 py-3 bg-slate-800/60 border border-slate-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 />
               </div>
 
-              {/* Custom Styled Logo File Input */}
+              {/* Logo Upload */}
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Logo
                 </label>
                 <label
                   htmlFor="logo-upload"
-                  className="w-full flex items-center justify-center px-4 py-3 bg-slate-800/60 border-2 border-dashed border-slate-600 rounded-lg text-gray-400 hover:text-white hover:border-blue-500 cursor-pointer transition-all duration-300"
+                  className="w-full flex flex-col sm:flex-row items-center justify-center px-4 py-3 bg-slate-800/60 border-2 border-dashed border-slate-600 rounded-lg text-gray-400 hover:text-white hover:border-blue-500 cursor-pointer transition-all"
                 >
                   <UploadIcon />
-                  <span>{data?.file?.name}</span>
+                  <span className="truncate max-w-full sm:max-w-xs">
+                    {data?.file?.name || "Choose a file"}
+                  </span>
                 </label>
                 <input
                   type="file"
@@ -234,14 +217,16 @@ const SingleCompany = () => {
               </div>
             </div>
 
-            {/* Awesome Update Button */}
-            <div className="flex justify-start pt-6">
+            {/* Submit Button */}
+            <div className="pt-4">
               {loading ? (
-                <AttractiveLoader />
+                <div className="flex justify-center">
+                  <AttractiveLoader />
+                </div>
               ) : (
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-500 focus:ring-opacity-50 transition-all duration-300 transform hover:scale-105"
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-500 transition-all transform hover:scale-105"
                 >
                   UPDATE
                 </button>

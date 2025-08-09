@@ -11,8 +11,8 @@ const TotalApplicants = () => {
   const applications = useSelector((state) => state.applicants.applications);
 
   const [openDropdownId, setOpenDropdownId] = useState(null);
-  const [toastMessage, setToastMessage] = useState(""); // toast message
-  const [showToast, setShowToast] = useState(false); // visibility control
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
   const updateStatusHandler = async (id, status) => {
     try {
@@ -21,24 +21,19 @@ const TotalApplicants = () => {
         { status },
         { withCredentials: true }
       );
-      console.log(res)
 
       if (res.data.message === "update successfully") {
         setToastMessage(`✅ Status updated to ${status}`);
-        setShowToast(true);
-        setOpenDropdownId(null);
       } else {
         setToastMessage("⚠️ Something went wrong.");
-        setShowToast(true);
       }
+      setShowToast(true);
+      setOpenDropdownId(null);
     } catch (error) {
       setToastMessage("❌ Failed to update status");
       setShowToast(true);
     }
-
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
+    setTimeout(() => setShowToast(false), 3000);
   };
 
   const handleDropdownToggle = (appId) => {
@@ -47,10 +42,7 @@ const TotalApplicants = () => {
 
   useEffect(() => {
     const fetchApplications = async () => {
-      if (!jobId) {
-        console.error("No Job ID found in URL.");
-        return;
-      }
+      if (!jobId) return;
       try {
         const res = await axios.get(
           `http://localhost:3000/api/application/get/Applicants/${jobId}`
@@ -67,7 +59,7 @@ const TotalApplicants = () => {
     <div className="p-4 relative">
       {/* ✅ Toast Notification */}
       {showToast && (
-        <div className="fixed top-5 right-5 bg-gray-800 text-white px-4 py-2 rounded shadow-lg z-50 transition-opacity duration-300">
+        <div className="fixed top-5 right-5 bg-gray-800 text-white px-4 py-2 rounded shadow-lg z-50">
           {toastMessage}
         </div>
       )}
@@ -76,9 +68,10 @@ const TotalApplicants = () => {
         Total Applications ({applications?.length || 0})
       </h1>
 
-      <div className="overflow-x-auto">
+      {/* Desktop Table */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm text-left text-white bg-gray-900 rounded-lg">
-          <thead className="text-xs uppercase bg-gray-800 text-white">
+          <thead className="text-xs uppercase bg-gray-800">
             <tr>
               <th className="px-6 py-3">Full Name</th>
               <th className="px-6 py-3">Email</th>
@@ -91,69 +84,43 @@ const TotalApplicants = () => {
           <tbody>
             {applications && applications.length > 0 ? (
               applications.map((app) => (
-                <tr
-                  key={app._id}
-                  className="border-b border-gray-700 hover:bg-gray-800"
-                >
+                <tr key={app._id} className="border-b border-gray-700 hover:bg-gray-800">
                   <td className="px-6 py-4">{app.applicant?.fullName || "N/A"}</td>
                   <td className="px-6 py-4">{app.applicant?.email || "N/A"}</td>
                   <td className="px-6 py-4">{app.applicant?.phoneNumber || "N/A"}</td>
                   <td className="px-6 py-4">
-                    {app.applicant?.profile?.resume &&
-                    app.applicant.profile.resume[0] ? (
-                      <a
-                        href={app.applicant.profile.resume[0]}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-400 underline"
-                      >
+                    {app.applicant?.profile?.resume?.[0] ? (
+                      <a href={app.applicant.profile.resume[0]} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">
                         View Resume
                       </a>
-                    ) : (
-                      "N/A"
-                    )}
+                    ) : "N/A"}
                   </td>
                   <td className="px-6 py-4">
-                    {app.createdAt
-                      ? new Date(app.createdAt).toLocaleDateString()
-                      : "N/A"}
+                    {app.createdAt ? new Date(app.createdAt).toLocaleDateString() : "N/A"}
                   </td>
                   <td className="px-6 py-4 text-center relative">
                     <button
-                      className="p-2 rounded-full hover:bg-slate-700 transition-colors duration-200"
+                      className="p-2 rounded-full hover:bg-slate-700"
                       onClick={() => handleDropdownToggle(app._id)}
                     >
                       <MoreHorizontal className="w-5 h-5" />
                     </button>
                     {openDropdownId === app._id && (
                       <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10">
-                        <div
-                          className="py-1"
-                          role="menu"
-                          aria-orientation="vertical"
-                          aria-labelledby="options-menu"
+                        <button
+                          className="block w-full text-left px-4 py-2 text-sm text-green-400 hover:bg-gray-700"
+                          value="ACCEPTED"
+                          onClick={(e) => updateStatusHandler(app._id, e.target.value)}
                         >
-                          <button
-                            className="block w-full text-left px-4 py-2 text-sm text-green-400 hover:bg-gray-700"
-                            role="menuitem"
-                            value="ACCEPTED"
-                            onClick={(e) =>
-                              updateStatusHandler(app._id, e.target.value)
-                            }
-                          >
-                            Accept
-                          </button>
-                          <button
-                            className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700"
-                            role="menuitem"
-                            value="REJECTED"
-                            onClick={(e) =>
-                              updateStatusHandler(app._id, e.target.value)
-                            }
-                          >
-                            Reject
-                          </button>
-                        </div>
+                          Accept
+                        </button>
+                        <button
+                          className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700"
+                          value="REJECTED"
+                          onClick={(e) => updateStatusHandler(app._id, e.target.value)}
+                        >
+                          Reject
+                        </button>
                       </div>
                     )}
                   </td>
@@ -162,12 +129,64 @@ const TotalApplicants = () => {
             ) : (
               <tr>
                 <td colSpan="6" className="text-center py-4 text-gray-400">
-                  No applications found for this job.
+                  No applications found.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {applications && applications.length > 0 ? (
+          applications.map((app) => (
+            <div key={app._id} className="bg-gray-900 p-4 rounded-lg shadow border border-gray-700">
+              <p className="text-white font-bold">{app.applicant?.fullName || "N/A"}</p>
+              <p className="text-gray-400 text-sm">{app.applicant?.email || "N/A"}</p>
+              <p className="text-gray-400 text-sm">{app.applicant?.phoneNumber || "N/A"}</p>
+              <p className="text-sm mt-2">
+                {app.applicant?.profile?.resume?.[0] ? (
+                  <a href={app.applicant.profile.resume[0]} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">
+                    View Resume
+                  </a>
+                ) : "N/A"}
+              </p>
+              <p className="text-gray-400 text-xs mt-1">
+                {app.createdAt ? new Date(app.createdAt).toLocaleDateString() : "N/A"}
+              </p>
+
+              <div className="mt-3 relative">
+                <button
+                  className="p-2 rounded-full hover:bg-slate-700"
+                  onClick={() => handleDropdownToggle(app._id)}
+                >
+                  <MoreHorizontal className="w-5 h-5 text-white" />
+                </button>
+                {openDropdownId === app._id && (
+                  <div className="absolute right-0 mt-2 w-40 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10">
+                    <button
+                      className="block w-full text-left px-4 py-2 text-sm text-green-400 hover:bg-gray-700"
+                      value="ACCEPTED"
+                      onClick={(e) => updateStatusHandler(app._id, e.target.value)}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700"
+                      value="REJECTED"
+                      onClick={(e) => updateStatusHandler(app._id, e.target.value)}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-400">No applications found.</p>
+        )}
       </div>
     </div>
   );

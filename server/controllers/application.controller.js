@@ -2,8 +2,6 @@ const Application=require('../models/application.model')
 const Job=require('../models/job.model')
 const applyJob = async (req, res) => {
     console.log("applyJob triggered ✅");
-console.log("req.id:", req.id);
-console.log("req.body:", req.body);
   try {
     const userId = req.id;
     const jobId = req.params.id;
