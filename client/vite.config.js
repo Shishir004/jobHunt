@@ -7,18 +7,21 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000', // Replace with your backend URL if different
+        target: 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
       },
     },
   },
   optimizeDeps: {
-    exclude: ['cookie'],  // <- Prevent Vite from pre-bundling 'cookie'
+    exclude: ['cookie'],
   },
   build: {
     commonjsOptions: {
-      exclude: ['cookie'], // <- Prevent Vite from bundling 'cookie' in production build
+      exclude: ['cookie'],
     },
+  },
+  ssr: {
+    noExternal: ['cookie'],  // <== Add this line
   },
 })
