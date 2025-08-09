@@ -13,4 +13,12 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    exclude: ['cookie'],  // <- Prevent Vite from pre-bundling 'cookie'
+  },
+  build: {
+    commonjsOptions: {
+      exclude: ['cookie'], // <- Prevent Vite from bundling 'cookie' in production build
+    },
+  },
 })
