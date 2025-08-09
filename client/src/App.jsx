@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/shared/Navbar.jsx";
-import Login from "./components/shared/login.jsx";
+import Login from "./components/shared/Login.jsx";
 import Signup from "./components/shared/SignUp.jsx";
 import { Provider, useSelector } from "react-redux";
 import store from "./redux/store.js";
