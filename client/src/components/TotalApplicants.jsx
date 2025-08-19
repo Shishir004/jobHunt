@@ -17,7 +17,7 @@ const TotalApplicants = () => {
   const updateStatusHandler = async (id, status) => {
     try {
       const res = await axios.post(
-        `http://localhost:3000/api/application/update/status/${id}`,
+        `https://jobhunt-1-gvy1.onrender.com/api/application/update/status/${id}`,
         { status },
         { withCredentials: true }
       );

@@ -8,7 +8,7 @@ const useGetAllCompanies = () => {
     useEffect(()=>{
         const fetchSingleCompany=async()=>{
             try {
-                const res=await axios.get(`http://localhost:3000/api/company/get`,{withCredentials:true})
+                const res=await axios.get(`https://jobhunt-1-gvy1.onrender.com/api/company/get`,{withCredentials:true})
                 if(res.data.success)
                 {
                     dispatch(setCompaniez(res.data.companies));

@@ -15,7 +15,7 @@ const CompaniesTable = () => {
   const handleDeleteJobs = async (userID) => {
     try {
       const res = await axios.delete(
-        `http://localhost:3000/api/company/delete/${userID}`,
+        `https://jobhunt-1-gvy1.onrender.com/api/company/delete/${userID}`,
         { withCredentials: true }
       );
       setFilterCompany((prev) => prev.filter((c) => c._id !== userID));

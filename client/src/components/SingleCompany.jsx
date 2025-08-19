@@ -79,7 +79,7 @@ const SingleCompany = () => {
     try {
       setLoading(true);
       const res = await axios.put(
-        `http://localhost:3000/api/company/update/company/${companyid}`,
+        `https://jobhunt-1-gvy1.onrender.com/company/update/company/${companyid}`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

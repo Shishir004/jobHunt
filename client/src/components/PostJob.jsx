@@ -38,7 +38,7 @@ const PostJob = () => {
     try {
       setLoading(true);
       const res = await axios.post(
-        "http://localhost:3000/api/job/postJob",
+        "https://jobhunt-1-gvy1.onrender.com/api/job/postJob",
         input,
         {
           headers: {
