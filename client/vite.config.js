@@ -2,21 +2,9 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-// Empty module shim for 'cookie'
-const emptyModule = () => ({
-  name: 'empty-module',
-  resolveId(id) {
-    if (id === 'cookie') return id
-    return null
-  },
-  load(id) {
-    if (id === 'cookie') return 'export default {}'
-    return null
-  }
-})
-
+// ✅ Final config
 export default defineConfig({
-  plugins: [react(), tailwindcss(), emptyModule()],
+  plugins: [react(), tailwindcss()],
   server: {
     proxy: {
       '/api': {
@@ -26,15 +14,10 @@ export default defineConfig({
       },
     },
   },
-  optimizeDeps: {
-    exclude: ['cookie'],
-  },
-  build: {
-    commonjsOptions: {
-      exclude: ['cookie'],
-    },
-  },
-  ssr: {
-    noExternal: ['cookie'],
-  },
+  resolve: {
+    alias: {
+      // 👇 whenever "cookie" is imported, use ESM-safe "cookie-es"
+      cookie: 'cookie-es'
+    }
+  }
 })
